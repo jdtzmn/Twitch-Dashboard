@@ -33,7 +33,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
             if (Hls.isSupported()) {
               $.get('https://cors-anywhere.herokuapp.com/http://usher.twitch.tv/api/channel/hls/' + user.name + '.m3u8?player=twitchweb&token=' + data.token + '&sig=' + data.sig + '&allow_audio_only=true&allow_source=true&type=any&p=' + p, (res) => {
                 // get m3u8 url from response
-                let url = res.match(/(http:\/\/.*)/)[0]
+                let url = 'https://cors-anywhere.herokuapp.com/' + res.match(/(http:\/\/.*)/)[0]
 
                 // set video source and start playing
                 let hls = new Hls()
