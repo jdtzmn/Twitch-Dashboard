@@ -33,7 +33,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
             if (Hls.isSupported()) {
               $.get('https://cors-anywhere.herokuapp.com/http://usher.twitch.tv/api/channel/hls/' + user.name + '.m3u8?player=twitchweb&token=' + data.token + '&sig=' + data.sig + '&allow_audio_only=true&allow_source=true&type=any&p=' + p, (res) => {
                 // get m3u8 url from response
-                let url = 'https://cors-anywhere.herokuapp.com/' + res.match(/(http:\/\/.*)/)[0]
+                let url = res.match(/(http:\/\/.*)/)[0]
 
                 // set video source and start playing
                 let hls = new Hls()
@@ -86,6 +86,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
               scales: {
                 yAxes: [{
                   ticks: {
+                    beginAtZero: true,
                     stepSize: 1
                   }
                 }]
@@ -95,6 +96,19 @@ Twitch.init({ clientId: clientId }, (err, status) => {
 
           let latestLabel = 0
 
+          let viewers = stream.stream.viewers
+          let notification
+          let renotify = () => {
+            notify({
+              title: viewers + ' viewer' + (viewers !== 1 ? 's' : ''),
+              requireInteraction: true
+            }, (obj) => {
+              if (notification) notification.close()
+              notification = obj
+            })
+          }
+          renotify()
+
           // set viewer check interval
           setInterval(() => {
             Twitch.api({method: 'streams/' + user.name}, (err, stream) => {
@@ -103,6 +117,10 @@ Twitch.init({ clientId: clientId }, (err, status) => {
                 liveChart.config.data.labels.push(latestLabel += 10)
                 liveChart.config.data.datasets[0].data.push(stream.stream.viewers)
                 liveChart.update()
+                if (stream.stream.viewers !== viewers) {
+                  viewers = stream.stream.viewers
+                  renotify()
+                }
               } else {
                 window.location.reload()
               }
@@ -112,17 +130,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
       })
 
       // channel chat alerts
-      let client = new tmi.client({
-        connection: {
-          secure: true,
-          reconnect: true
-        },
-        identity: {
-          username: user.name,
-          password: 'oauth:' + Twitch.getToken()
-        },
-        channels: [user.name]
-      })
+      let client = new tmi.client({channels: [user.name]})
 
       client.connect()
 
@@ -138,7 +146,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
             body: msg,
             icon: user.logo || 'https://bit.ly/1WePcvi'
           }, function (notification, hide) {
-            hide(5000)
+            hide(10000)
           })
         })
       })
@@ -172,7 +180,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
     // set login button event
     $('.twitch-connect').click(() => {
       Twitch.login({
-        scope: ['user_read', 'chat_login', 'channel_read', 'channel_editor', 'channel_commercial']
+        scope: ['user_read', 'channel_read', 'channel_editor', 'channel_commercial']
       })
     })
   }
