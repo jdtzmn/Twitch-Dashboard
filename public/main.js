@@ -86,6 +86,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
               scales: {
                 yAxes: [{
                   ticks: {
+                    beginAtZero: true,
                     stepSize: 1
                   }
                 }]
@@ -95,6 +96,19 @@ Twitch.init({ clientId: clientId }, (err, status) => {
 
           let latestLabel = 0
 
+          let viewers = stream.stream.viewers
+          let notification
+          let renotify = () => {
+            notify({
+              title: viewers + ' viewer' + (viewers !== 1 ? 's' : ''),
+              requireInteraction: true
+            }, (obj) => {
+              if (notification) notification.close()
+              notification = obj
+            })
+          }
+          renotify()
+
           // set viewer check interval
           setInterval(() => {
             Twitch.api({method: 'streams/' + user.name}, (err, stream) => {
@@ -103,6 +117,10 @@ Twitch.init({ clientId: clientId }, (err, status) => {
                 liveChart.config.data.labels.push(latestLabel += 10)
                 liveChart.config.data.datasets[0].data.push(stream.stream.viewers)
                 liveChart.update()
+                if (stream.stream.viewers !== viewers) {
+                  viewers = stream.stream.viewers
+                  renotify()
+                }
               } else {
                 window.location.reload()
               }
@@ -128,7 +146,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
             body: msg,
             icon: user.logo || 'https://bit.ly/1WePcvi'
           }, function (notification, hide) {
-            hide(5000)
+            hide(10000)
           })
         })
       })
