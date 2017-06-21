@@ -1,0 +1,63 @@
+doctype html
+head
+  meta(charset='utf-8')
+  meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+  title Twitch Preview
+  link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css")
+  link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css")
+  link(rel='stylesheet', href='/styles.css', media='screen', charset='utf-8')
+body
+  .container-fluid
+    .login.hidden
+      .text-center
+        button.btn.twitch-btn.twitch-connect #[i.fa.fa-twitch] Connect with Twitch
+    .main.hidden
+      .row
+        .col
+          .card.prefs
+            .card-header Stream Information
+            .card-block
+              .form-group
+                label(for='title') Title
+                input#title.form-control(type='text')
+              .form-group
+                label(for='game') Game
+                input#game.form-control(type='text')
+              button#update.twitch-btn(type='submit') Update information
+          .card.chat
+            .card-header Chat
+            .card-block
+              iframe.chat(frameborder='0', scrolling='no', height='500', width='100%')
+        .col-6.col-vid
+          video(controls, muted, width='200').hidden-vid
+          video.shown-vid(width='100%', muted)
+          .overlay
+            h1.display-3 Not currently streaming
+          .text-center
+            button.toggle.twitch-btn(data-toggle='tooltip', data-placement='bottom', title='Only on Safari') Toggle Window Preview
+        .col
+          .card.commercials
+            .card-header Commercials
+            .card-block
+              button#30.col.twitch-btn 30 seconds
+              button#60.col.twitch-btn 60 seconds
+              button#90.col.twitch-btn 90 seconds
+              button#120.col.twitch-btn 120 seconds
+              button#150.col.twitch-btn 150 seconds
+              button#180.col.twitch-btn 180 seconds
+          .card.viewers
+            .card-header Viewers
+            .card-block
+              h1.text-center Not currently streaming
+              canvas.hidden(width='100%', height='100%')#viewers
+
+
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js")
+  script(src="https://cdn.jsdelivr.net/hls.js/latest/hls.min.js")
+  script(src="https://cdn.rawgit.com/justintv/twitch-js-sdk/a237d4be/twitch.min.js")
+  script(src="https://cdn.tmijs.org/js/latest/tmi.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js")
+  script(src="https://cdn.jsdelivr.net/npm/hls.js@latest")
+  script(src="/main.js", charset="utf-8")
