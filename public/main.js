@@ -112,7 +112,17 @@ Twitch.init({ clientId: clientId }, (err, status) => {
       })
 
       // channel chat alerts
-      let client = new tmi.client({channels: [user.name]})
+      let client = new tmi.client({
+        connection: {
+          secure: true,
+          reconnect: true
+        },
+        identity: {
+          username: user.name,
+          password: 'oauth:' + Twitch.getToken()
+        },
+        channels: [user.name]
+      })
 
       client.connect()
 
@@ -162,7 +172,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
     // set login button event
     $('.twitch-connect').click(() => {
       Twitch.login({
-        scope: ['user_read', 'channel_read', 'channel_editor', 'channel_commercial']
+        scope: ['user_read', 'chat_login', 'channel_read', 'channel_editor', 'channel_commercial']
       })
     })
   }
