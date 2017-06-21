@@ -177,7 +177,7 @@ const updateChannel = (status, game, cb) => {
       method: 'PUT',
       headers: {
         Accept: 'application/vnd.twitchtv.v5+json',
-        Authorization: 'OAuth ' + Twitch._config.session.token,
+        Authorization: 'OAuth ' + Twitch.getToken(),
         'content-type': 'application/x-www-form-urlencoded'
       },
       data: {
