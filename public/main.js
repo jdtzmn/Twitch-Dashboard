@@ -19,7 +19,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
         if (err) return console.log(err)
         if (stream.stream) {
           // get stream data
-          $.getJSON('http://query.yahooapis.com/v1/public/yql?q=select+*+from+json+where+url="http://api.twitch.tv/api/channels/' + user.name + '/access_token?client_id=' + clientId + '"&format=json', (res) => {
+          $.getJSON('https://query.yahooapis.com/v1/public/yql?q=select+*+from+json+where+url="http://api.twitch.tv/api/channels/' + user.name + '/access_token?client_id=' + clientId + '"&format=json', (res) => {
             let data = res.query.results.json
             console.log(data)
 
@@ -31,7 +31,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
 
             // set video src to stream
             if (Hls.isSupported()) {
-              $.get('http://cors-anywhere.herokuapp.com/http://usher.twitch.tv/api/channel/hls/' + user.name + '.m3u8?player=twitchweb&token=' + data.token + '&sig=' + data.sig + '&allow_audio_only=true&allow_source=true&type=any&p=' + p, (res) => {
+              $.get('https://cors-anywhere.herokuapp.com/http://usher.twitch.tv/api/channel/hls/' + user.name + '.m3u8?player=twitchweb&token=' + data.token + '&sig=' + data.sig + '&allow_audio_only=true&allow_source=true&type=any&p=' + p, (res) => {
                 // get m3u8 url from response
                 let url = res.match(/(http:\/\/.*)/)[0]
 
@@ -126,7 +126,7 @@ Twitch.init({ clientId: clientId }, (err, status) => {
           notify({
             title: username,
             body: msg,
-            icon: user.logo || 'http://bit.ly/1WePcvi'
+            icon: user.logo || 'https://bit.ly/1WePcvi'
           }, function (notification, hide) {
             hide(5000)
           })
@@ -177,7 +177,7 @@ const updateChannel = (status, game, cb) => {
       method: 'PUT',
       headers: {
         Accept: 'application/vnd.twitchtv.v5+json',
-        Authorization: 'OAuth ' + Twitch._config.session.token,
+        Authorization: 'OAuth ' + Twitch.getToken(),
         'content-type': 'application/x-www-form-urlencoded'
       },
       data: {
