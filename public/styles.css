@@ -33,16 +33,42 @@ body {
   margin-top: 40vh;
 }
 
-.row {
-  margin-top: 5vh;
+[class^='col'] {
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
-.card {
+/*
+  SCROLL BAR
+*/
+
+
+[class^='col']::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #8642f4;
+}
+
+[class^='col']::-webkit-scrollbar {
+	width: 4px;
+	background-color: #F5F5F5;
+}
+
+[class^='col']::-webkit-scrollbar-thumb {
+	background-color: #ffffff;
+}
+
+.card:first-child {
+  margin-top: 20px;
   margin-bottom: 30px;
+}
+
+.card.chat {
+  margin-bottom: 0px;
 }
 
 .col-vid {
   position: relative;
+  margin-top: 20px;
 }
 
 .col-vid video {
