@@ -1,32 +1,13 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
-const path = require('path')
-const url = require('url')
 
-let win
+// Start the application menubar
+const win = require('./src/window')
+const menubar = require('./src/menu')
 
-function createWindow () {
-  win = new BrowserWindow({
-    width: 1150,
-    height: 760,
-    minWidth: 1150,
-    minHeight: 760,
-    icon: './icons/icon@2x.png',
-    titleBarStyle: 'hiddenInset',
-    backgroundColor: '#8642f4'
-  })
-
-  win.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-
-  win.on('closed', () => {
-    win = null
-  })
-}
-
-app.on('ready', createWindow)
+app.on('ready', () => {
+  menubar.init()
+  win.createWindow()
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -36,9 +17,13 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (win === null) {
-    createWindow()
+    win.createWindow()
   }
 })
+
+// ---------------------------------------
+// ---------- AUTHENTICATION -------------
+// ---------------------------------------
 
 ipcMain.on('twitch-login', (event, authURL) => {
   let authWindow = new BrowserWindow({
@@ -46,21 +31,28 @@ ipcMain.on('twitch-login', (event, authURL) => {
     height: 600,
     show: false,
     title: 'Twitch',
-    parent: win,
+    parent: win.getWindow(),
     modal: true
   })
   authWindow.loadURL(authURL)
 
   const handleRedirect = (url) => {
+    // get code from url
     let codeRegex = /#access_token=([\d\w]*)/
-    let scopeRegex = /&scope=(.*)/
     let code = codeRegex.exec(url) ? codeRegex.exec(url)[1] : null
+
+    // get scopes from url
+    let scopeRegex = /&scope=(.*)/
     let scopeString = scopeRegex.exec(url) ? scopeRegex.exec(url)[1] : null
     let scopes = scopeString ? scopeString.split('+') : null
 
-    if (code) {
-      authWindow.destroy()
+    // get error from url
+    let errorRegex = /\?error=/
+    let error = errorRegex.exec(url)
 
+    if (code || error) authWindow.destroy()
+
+    if (code) {
       let authObj = {
         token: code,
         scope: scopes,
@@ -70,6 +62,8 @@ ipcMain.on('twitch-login', (event, authURL) => {
       }
 
       event.sender.send('twitch-auth', JSON.stringify(authObj))
+    } else if (error) {
+      event.sender.send('twitch-auth', null)
     } else {
       authWindow.show()
     }

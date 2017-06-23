@@ -1,16 +1,22 @@
 {
   "name": "twitch-dashboard",
+  "productName": "Twitch Dashboard",
   "version": "1.0.0",
   "description": "A twitch dashboard for clutter free twitch streaming",
   "main": "main.js",
   "scripts": {
     "start": "./node_modules/.bin/electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=icons/icon@2x.icns --prune=true --out=release-builds"
   },
   "author": "jdtzmn <jdtzmn@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "electron": "^1.6.11",
+    "electron-packager": "^8.7.1"
+  },
+  "dependencies": {
+    "about-window": "^1.6.3",
     "jquery": "^3.2.1"
   }
 }
