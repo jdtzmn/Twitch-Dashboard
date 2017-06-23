@@ -1,17 +1,16 @@
 {
   "name": "twitch-dashboard",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "dependencies": {
-    "express": "^4.15.2",
-    "pug": "^2.0.0-beta11"
-  },
-  "devDependencies": {},
+  "description": "A twitch dashboard for clutter free twitch streaming",
+  "main": "main.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "./node_modules/.bin/electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "jdtzmn <jdtzmn@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^1.6.11",
+    "jquery": "^3.2.1"
+  }
 }
