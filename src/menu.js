@@ -1,6 +1,5 @@
 const {app, Menu} = require('electron')
 const win = require('./window')
-const appName = 'Twitch Dashboard'
 
 let menu
 
@@ -66,10 +65,10 @@ const getMenuTemplate = () => {
   if (process.platform === 'darwin') {
     // Add app menu if macOS
     template.unshift({
-      label: appName,
+      label: app.getName(),
       submenu: [
         {
-          label: 'About ' + appName,
+          label: 'About ' + app.getName(),
           click: () => win.openAboutWindow()
         },
         { type: 'separator' },
@@ -88,7 +87,7 @@ const getMenuTemplate = () => {
     })
 
     // Add Window menu (OS X)
-    template.splice(5, 0, {
+    template.splice(2, 0, {
       label: 'Window',
       role: 'window',
       submenu: [
@@ -107,12 +106,12 @@ const getMenuTemplate = () => {
   }
 
   if (process.platform === 'linux' || process.platform === 'win32') {
-    template[4].submenu.push(
+    template[2].submenu.push(
       {
         type: 'separator'
       },
       {
-        label: 'About ' + appName,
+        label: 'About ' + app.getName(),
         click: () => win.openAboutWindow()
       }
     )

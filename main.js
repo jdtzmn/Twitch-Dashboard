@@ -32,7 +32,7 @@ ipcMain.on('twitch-login', (event, authURL) => {
     show: false,
     title: 'Twitch',
     parent: win.getWindow(),
-    modal: true
+    modal: process.platform !== 'win32'
   })
   authWindow.loadURL(authURL)
 

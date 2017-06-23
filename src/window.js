@@ -6,12 +6,16 @@ const url = require('url')
 let win = null
 
 const createWindow = () => {
+
+  let height = process.platform === 'win32' ? 780 : 760
+
   if (win === null) {
     win = new BrowserWindow({
       width: 1150,
-      height: 760,
+      height,
       minWidth: 1150,
-      minHeight: 760,
+      minHeight: height,
+      title: 'Twitch Dashboard',
       icon: './icons/icon@2x.png',
       titleBarStyle: 'hiddenInset',
       backgroundColor: '#8642f4'

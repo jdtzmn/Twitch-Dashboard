@@ -7,7 +7,8 @@
   "scripts": {
     "start": "./node_modules/.bin/electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=icons/icon@2x.icns --prune=true --out=release-builds"
+    "package-mac": "./node_modules/.bin/electron-packager . --overwrite --platform=darwin --arch=x64 --icon=icons/icon@2x.icns --prune=true --out=release-builds",
+    "package-win": "./node_modules/.bin/electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=icons/icon@2x.ico --prune=true --out=release-builds --version-string.CompanyName=jdtzmn --version-string.FileDescription=\"Twitch Dashboard\" --version-string.ProductName=\"Twitch Dashboard\""
   },
   "author": "jdtzmn <jdtzmn@gmail.com>",
   "license": "MIT",

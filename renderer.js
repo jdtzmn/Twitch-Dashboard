@@ -1,5 +1,8 @@
 const { ipcRenderer, session } = require('electron')
 
+// hide menubar if windows
+if (process.platform === 'win32') $('#menubar').addClass('hidden')
+
 window.Twitch.login = (options) => {
   if (!options.scope) {
     throw new Error('Must specify list of requested scopes')
