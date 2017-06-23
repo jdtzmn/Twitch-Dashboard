@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 
 // Start the application menubar
 const win = require('./src/window')
@@ -60,10 +60,14 @@ ipcMain.on('twitch-login', (event, authURL) => {
         error: null,
         errorDescription: null
       }
-
       event.sender.send('twitch-auth', JSON.stringify(authObj))
     } else if (error) {
-      event.sender.send('twitch-auth', null)
+      dialog.showMessageBox({
+        type: 'error',
+        title: 'Authentication Unsuccessful',
+        message: 'Authentication Unsuccessful',
+        detail: 'Please try again later'
+      })
     } else {
       authWindow.show()
     }

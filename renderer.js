@@ -21,19 +21,13 @@ window.Twitch.login = (options) => {
   ipcRenderer.send('twitch-login', url)
 
   ipcRenderer.once('twitch-auth', (event, str) => {
-    // authentication successful
-    if (str) {
-      // set permanent session token
-      window.localStorage.setItem('twitch_oauth_session', str)
-      window.localStorage.removeItem('relogin')
+    // set permanent session token
+    window.localStorage.setItem('twitch_oauth_session', str)
+    window.localStorage.removeItem('relogin')
 
-      // set temporary session token
-      window.sessionStorage.setItem('twitch_oauth_session', str)
-      window.location.reload()
-    } else {
-      // authentication error
-      window.alert('Authentication Unsuccessful, \n Please try again later.')
-    }
+    // set temporary session token
+    window.sessionStorage.setItem('twitch_oauth_session', str)
+    window.location.reload()
   })
 }
 
