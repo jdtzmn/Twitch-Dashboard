@@ -7,7 +7,7 @@ let win = null
 
 const createWindow = () => {
 
-  let height = process.platform === 'win32' ? 780 : 760
+  let height = process.platform === 'win32' ? 815 : 795
 
   if (win === null) {
     win = new BrowserWindow({

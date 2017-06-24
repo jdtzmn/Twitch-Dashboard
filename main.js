@@ -1,4 +1,6 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, Notification, globalShortcut } = require('electron')
+const path = require('path')
+const url = require('url')
 
 // Start the application menubar
 const win = require('./src/window')
@@ -7,6 +9,9 @@ const menubar = require('./src/menu')
 app.on('ready', () => {
   menubar.init()
   win.createWindow()
+  globalShortcut.register('CommandOrControl+Alt+P', () => {
+    win.getWindow().webContents.send('activate-preview-window')
+  })
 })
 
 app.on('window-all-closed', () => {
@@ -19,6 +24,10 @@ app.on('activate', () => {
   if (win === null) {
     win.createWindow()
   }
+})
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll()
 })
 
 // ---------------------------------------
@@ -77,4 +86,108 @@ ipcMain.on('twitch-login', (event, authURL) => {
   authWindow.webContents.on('did-get-redirect-request', (event, oldURL, newURL) => handleRedirect(newURL))
 
   authWindow.on('close', () => { authWindow = null })
+})
+
+// ---------------------------------------
+// ------------ NOTIFICATIONS ------------
+// ---------------------------------------
+
+ipcMain.on('chat-receive', (event, options) => {
+  const n = new Notification({
+    title: options.title,
+    body: options.body,
+    icon: options.icon,
+    hasReply: true,
+    replyPlaceholder: '@' + options.title
+  })
+
+  n.on('reply', (e, reply) => event.sender.send('chat-reply', {
+    to: options.title,
+    reply
+  }))
+
+  n.show()
+})
+
+// ---------------------------------------
+// ----------- PREVIEW WINDOW ------------
+// ---------------------------------------
+
+let preview = null
+
+ipcMain.on('toggle-preview-window', (event, videoURL) => {
+  if (preview) {
+    preview.destroy()
+    preview = null
+  } else {
+    preview = new BrowserWindow({
+      alwaysOnTop: true,
+      width: 515,
+      height: 322,
+      x: 0,
+      y: 0,
+      backgroundColor: '#000000',
+      titleBarStyle: 'none',
+      frame: false
+    })
+
+    preview.loadURL(url.format({
+      pathname: path.join(__dirname, './lib/preview.html'),
+      search: '?' + videoURL,
+      protocol: 'file:',
+      slashes: true
+    }))
+
+    // ---------------------------------------
+    // ----------- LOCKING RESIZES -----------
+    // ---------------------------------------
+    let timeout
+
+    preview.on('resize', () => {
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        let width = preview.getContentSize()[0]
+        preview.setContentSize(width, Math.round(width * 0.621))
+      }, 100)
+    })
+
+    preview.on('close', () => {
+      preview = null
+      console.log(preview)
+    })
+  }
+})
+
+// ---------------------------------------
+// -------- PULL TO NEAREST CORNER -------
+// ---------------------------------------
+
+ipcMain.on('preview-window-mouseup', (event, dimensions) => {
+  // ---------------------------------------
+  // -------------- MOVE WINDOW ------------
+  // ---------------------------------------
+  let interval = setInterval(() => {
+    let windowSize = preview.getSize()
+    let position = preview.getPosition()
+    position[0] += windowSize[0] / 2
+    position[1] += windowSize[1] / 2
+    let transition = process.platform === 'darwin'
+    if (position[0] < dimensions[0] / 2) {
+      if (position[1] < dimensions[1] / 2) {
+        preview.setPosition(0, 0, transition)
+      } else {
+        preview.setPosition(0, dimensions[1] - windowSize[1], transition)
+      }
+    } else {
+      if (position[1] < dimensions[1] / 2) {
+        preview.setPosition(dimensions[0] - windowSize[0], 0, transition)
+      } else {
+        preview.setPosition(dimensions[0] - windowSize[0], dimensions[1] - windowSize[1], transition)
+      }
+    }
+  }, 50)
+
+  setTimeout(() => {
+    clearInterval(interval)
+  }, 150)
 })

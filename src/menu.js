@@ -21,9 +21,13 @@ const getMenuTemplate = () => {
         {
           role: 'close'
         },
+        { type: 'separator' },
         {
-          type: 'separator'
+          label: 'Toggle Preview Window',
+          accelerator: 'CmdOrCtrl+Alt+P',
+          click: () => win.getWindow().webContents.send('activate-preview-window')
         },
+        { type: 'separator' },
         {
           label: 'Logout of Twitch',
           accelerator: 'CmdOrCtrl+Shift+L',
