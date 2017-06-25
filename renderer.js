@@ -60,6 +60,7 @@ window.notify = (options) => {
   if (process.platform === 'darwin') {
     ipcRenderer.send('chat-receive', options)
   } else {
+    options.silent = true
     let notification = new window.Notification(options.title || '', options)
   }
 }
