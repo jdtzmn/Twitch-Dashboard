@@ -56,9 +56,12 @@ ipcRenderer.on('twitch-logout', () => {
 // ---------------------------------------
 
 // notification polyfill
-window.notify = (options, cb) => {
-  options.cb = cb
-  ipcRenderer.send('chat-receive', options)
+window.notify = (options) => {
+  if (process.platform === 'darwin') {
+    ipcRenderer.send('chat-receive', options)
+  } else {
+    let notification = new window.Notification(options.title || '', options)
+  }
 }
 
 // chat reply event to be sent to the chat
