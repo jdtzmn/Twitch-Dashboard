@@ -6,7 +6,6 @@ const url = require('url')
 let win = null
 
 const createWindow = () => {
-
   let height = process.platform === 'win32' ? 815 : 795
 
   if (win === null) {
@@ -36,7 +35,7 @@ const createWindow = () => {
 const getWindow = () => win
 
 const openAboutWindow = () => openAboutWin({
-  icon_path: path.join(__dirname, '../icons/icon@2x.png'),
+  icon_path: path.join(__dirname, '../icons/icon@shadow.png'),
   package_json_dir: path.join(__dirname, '../'),
   bug_report_url: 'https://github.com/jdtzmn/Twitch-Dashboard/issues',
   homepage: 'https://jdtzmn.github.io/Twitch-Dashboard'
