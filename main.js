@@ -128,7 +128,7 @@ ipcMain.on('toggle-preview-window', (event, videoURL) => {
       y: 0,
       backgroundColor: '#000000',
       titleBarStyle: 'none',
-      frame: false
+      frame: !(process.platform === 'darwin')
     })
 
     preview.loadURL(url.format({
@@ -138,34 +138,59 @@ ipcMain.on('toggle-preview-window', (event, videoURL) => {
       slashes: true
     }))
 
+    // hide the menubar on windows and linux
+    preview.setMenuBarVisibility(false)
+
     // ---------------------------------------
     // ----------- LOCKING RESIZES -----------
     // ---------------------------------------
-    let timeout
 
-    preview.on('resize', () => {
-      clearTimeout(timeout)
-      timeout = setTimeout(() => {
-        let width = preview.getContentSize()[0]
-        preview.setContentSize(width, Math.round(width * 0.621))
-      }, 100)
-    })
+      let timeout, resized
+
+      preview.on('resize', () => {
+        if (!resized) {
+          clearTimeout(timeout)
+          timeout = setTimeout(() => {
+            resized = true
+            let width = preview.getContentSize()[0]
+            preview.setContentSize(width, Math.round(width * 0.621))
+          }, 100)
+        } else {
+          resized = false
+        }
+      })
+    if (!(process.platform === 'darwin')) {
+      // ---------------------------------------
+      // --- Windows PULL TO NEAREST CORNER ----
+      // ---------------------------------------
+
+      let timeout
+
+      preview.on('move', () => {
+        clearTimeout(timeout)
+        timeout = setTimeout(() => {
+          preview.webContents.send('preview-window-mouseup')
+        }, 100)
+      })
+    }
 
     preview.on('close', () => {
       preview = null
-      console.log(preview)
     })
   }
 })
 
 // ---------------------------------------
-// -------- PULL TO NEAREST CORNER -------
+// ----- MacOS PULL TO NEAREST CORNER ----
 // ---------------------------------------
 
-ipcMain.on('preview-window-mouseup', (event, dimensions) => {
-  // ---------------------------------------
-  // -------------- MOVE WINDOW ------------
-  // ---------------------------------------
+ipcMain.on('preview-window-mouseup', (event, dimensions) => moveWindowToCorner(dimensions))
+
+// ---------------------------------------
+// -------------- MOVE WINDOW ------------
+// ---------------------------------------
+
+const moveWindowToCorner = (dimensions) => {
   let interval = setInterval(() => {
     let windowSize = preview.getSize()
     let position = preview.getPosition()
@@ -190,4 +215,4 @@ ipcMain.on('preview-window-mouseup', (event, dimensions) => {
   setTimeout(() => {
     clearInterval(interval)
   }, 150)
-})
+}

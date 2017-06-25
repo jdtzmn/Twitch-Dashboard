@@ -31,5 +31,7 @@
       ipcRenderer.send('preview-window-mouseup', [screen.width, screen.height])
     }
 
+    ipcRenderer.on('preview-window-mouseup', () => ipcRenderer.send('preview-window-mouseup', [screen.width, screen.height]))
+
   </script>
 </html>
